@@ -1,2 +1,3 @@
 !#/bin/bash
-stress --cpu 400
+stress --cpu 4000
+
