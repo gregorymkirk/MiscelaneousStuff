@@ -3,8 +3,8 @@ Function Out-UTF8NoBOM {
 # which many programs (like Terraform) do not accept.    
 # accepts a string containing content, and an absolute path & filename (e.g c:\mydir\myfile.txt),
 # and writes a UTF-8 file with no BOM>
-# if your script will only run on versions 6 or later (i.e. powershell core) then this function is not necessary, 
-# but using it allows backwards compatibility with older versions of powershell.
+# if your script will only run on versions 6 or later (i.e. PowerShell Core) then this function is not necessary, 
+# but using it allows backwards compatibility with older versions of powershell (a.k.a. Windows Powershell).
 
 #
 # WARNING: Function does NOT check for filename compliance (e.g reserved words, reserved characters etc) or valid paths. 
