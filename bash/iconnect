@@ -1,0 +1,18 @@
+#!/bin/bash
+# takes 1 argument:  the instance ID.  e.g i-999999999
+# Simplifies the use of instance connect from the bash command line
+# Requires jq & AWS CLI v2
+# Assumes you are connecting via the private IP (e.g through a bastion host in your AWS environment)
+
+
+AZ=$(aws ec2 describe-instances  --instance-ids $1 --output json|jq -r '.Reservations[0].Instances[0]
+.Placement.AvailabilityZone')
+IP=$(aws ec2 describe-instances  --instance-ids $1 --output json|jq -r '.Reservations[0].Instances[0].PrivateIpAddress')
+
+aws ec2-instance-connect send-ssh-public-key \
+    --instance-id $1 \
+    --availability-zone $AZ \
+    --instance-os-user ec2-user \
+    --ssh-public-key file://.ssh/id_rsa.pub
+
+ssh ec2-user@$IP
