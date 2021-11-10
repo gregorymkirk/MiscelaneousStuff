@@ -10,7 +10,7 @@ Function InstallDeps{
     ForEach ($Module in $OtherModules){
 
         if (!(Get-InstalledModule -Name $Module )){ 
-           Try {install-module -Name $Module -Force -AcceptLicense -AllowClobber -Repository PSGallery}
+           Try {install-module -Name $Module -Force -AcceptLicense -AllowClobber -Repository PSGallery -Scope CurrentUser}
            catch  {
             "Unable to install required Module $Module from PSGallery" |Tee-Object -Path $errorlog -Append 
             return $False
@@ -26,7 +26,7 @@ Function InstallDeps{
         #Make sure we have the AWS.Tools.Installer
         if (!(Get-InstalledModule -Name "AWS.Tools.Installer" )){ 
             write-host "AWS.Tools.Installer not found"
-            Try {install-module -Name "AWS.Tools.Installer" -Force -AcceptLicense -AllowClobber -Repository PSGallery}
+            Try {install-module -Name "AWS.Tools.Installer" -Force -AcceptLicense -AllowClobber -Repository PSGallery -Scope CurrentUser}
             catch  {
                 "Unable to install required AWS.Tools.Installer Module from PSGallery" |Tee-Object -Path $errorlog -Append 
                 return $False
@@ -39,7 +39,7 @@ Function InstallDeps{
             }
         ForEach ($Module in $AWSToolsModules){
             if (!(Get-InstalledModule -Name $Module )){ 
-            Try {Install-AWSToolsModule -Name $Module -Force -AcceptLicense -AllowClobber -Repository PSGallery}
+            Try {Install-AWSToolsModule -Name $Module -Force -AcceptLicense -AllowClobber -Repository PSGallery -Scope CurrentUser  }
             catch  {
                 "Unable to install required Module $Module from PSGallery" |Tee-Object -Path $errorlog -Append 
                 return $False
