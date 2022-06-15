@@ -1,28 +1,40 @@
-# A Powershell script to simplify using instance connect.
-# You must have created a publick key pair.  CHange $key on line 7 if you re not using the defualt key names.
-# Yuu will also need the command line SSH client (Open SSH, )installed and in your path, or modiffy line 28 accordingly
 param (
     [Parameter()][String]$lookup
 )
-$key= "~\.ssh\id_rsa.pub"
+
+Write-host $lookup
+$keyfile= "~\.ssh\id_rsa.pub"
+$awsprofile="govca"
+$key=get-content -Path $keyfile
 
 import-module AWS.Tools.Common
 import-module AWS.Tools.EC2
 import-Module AWS.Tools.EC2InstanceConnect
 
+Initialize-AWSDefaultConfiguration -ProfileName $awsprofile
+
+
 if ($lookup -match '^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$' ) {
     write-host "Looking up by Ip Address"
-    $instance=(Get-Ec2Instance -Filter "private-ip-address=$instance").instances
+    $instance=(Get-EC2Instance -Filter @(@{name="private-ip-address";values=$lookup})).Instances
+    $instance
 }
 elseif ($lookup -match 'i-[a-z0-9]{17}') {
     Write-Host "Looking up by Instance ID"
-    $instance=(Get-Ec2Instance -InstanceId $lookup).instances
+    $filter = New-Object Amazon.EC2.Model.Filter -Property @{Name = "v"; Values = $lookup}
+x
+    $instance=(Get-Ec2Instance -InstanceId $Filter).instances
+    $instance
+}
+else {
+    write-host "$Lookup does not match pattern for InstanceId or IP address"
+    exit
 }
 
 Send-EC2ICSSHPublicKey `
-    -InstanceId $instance.Instances.InstanceId `
-    -AvailabilityZone $instance.Instances.placement.AvailabilityZone `
+    -InstanceId $instance.InstanceId `
+    -AvailabilityZone $instance.placement.AvailabilityZone `
     -InstanceOSUser "ec2-user" `
     -SSHPublicKey $key
 
-ssh -i $key ec2-user@$($instance.Instances.PrivateIpAddress)
+ssh -i $keyfile ec2-user@$($instance.PrivateIpAddress)
